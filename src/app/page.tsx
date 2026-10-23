@@ -37,7 +37,7 @@ function MainContent() {
               </div>
               <div>
                 <h3 className="text-xs font-bold text-indigo-950 dark:text-indigo-200">
-                  Assessment Demonstration Guide & Business Rule Verification
+                  CarePilot Assessment Demonstration Guide & Business Rule Verification
                 </h3>
                 <p className="text-[11px] text-zinc-600 dark:text-zinc-400">
                   Switch roles anytime using the top toolbar to test the complete workflow in real time.
@@ -122,7 +122,7 @@ function MainContent() {
       {/* Hospital Footer */}
       <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 py-4 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between text-xs text-zinc-500 gap-2">
-          <span>Virus Quarantine & Treatment Facility — Technical Assessment Prototype</span>
+          <span>CarePilot — Virus Quarantine & Treatment Facility (Assessment MVP)</span>
           <div className="flex items-center gap-3">
             <span>Capacity Limit: <strong>74 Active Beds</strong></span>
             <span>•</span>

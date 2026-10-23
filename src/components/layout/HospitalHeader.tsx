@@ -48,24 +48,25 @@ export function HospitalHeader() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between py-3 gap-3">
           {/* Logo & Facility Title */}
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-red-500 via-rose-600 to-amber-600 flex items-center justify-center text-white shadow-md shadow-rose-500/20 shrink-0">
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-600 via-blue-600 to-teal-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20 shrink-0">
               <Building2 className="h-5 w-5" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-                  Virus Quarantine & Treatment Facility
+                <h1 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
+                  <span className="text-indigo-600 dark:text-indigo-400 font-extrabold tracking-tight">CarePilot</span>
+                  <span className="text-zinc-300 dark:text-zinc-700 font-light">|</span>
+                  <span className="hidden sm:inline">Virus Quarantine & Treatment Facility</span>
+                  <span className="sm:hidden">Quarantine Facility</span>
                 </h1>
-                <Badge variant="outline" className="text-[11px] font-medium border-rose-300 text-rose-700 bg-rose-50 dark:border-rose-900 dark:bg-rose-950/50 dark:text-rose-300">
+                <Badge variant="outline" className="text-[11px] font-medium border-indigo-300 text-indigo-700 bg-indigo-50 dark:border-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-300">
                   Iso-Unit A
                 </Badge>
               </div>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Regional Infectious Disease & Convalescence Center
+                Infectious Disease Quarantine & Convalescence Management
               </p>
             </div>
-          </div>
 
           {/* Quick Metrics & System Controls */}
           <div className="flex flex-wrap items-center gap-3">
