@@ -1,5 +1,120 @@
 import { Patient, TemperatureRecord, DoctorVisit } from "@/types/quarantine";
 import { getLocalDateString, getPreviousDate } from "./eligibility";
+import { DEFAULT_DOCTORS, DEFAULT_NURSES } from "./constants";
+
+const INDIAN_NAMES: Array<{ name: string; gender: "Male" | "Female" }> = [
+  { name: "Aarav Sharma", gender: "Male" },
+  { name: "Priya Patel", gender: "Female" },
+  { name: "Rajesh Verma", gender: "Male" },
+  { name: "Ananya Iyer", gender: "Female" },
+  { name: "Rohan Gupta", gender: "Male" },
+  { name: "Sunita Rao", gender: "Female" },
+  { name: "Vikram Malhotra", gender: "Male" },
+  { name: "Meera Nair", gender: "Female" },
+  { name: "Amit Singhania", gender: "Male" },
+  { name: "Deepa Deshmukh", gender: "Female" },
+  { name: "Sanjay Joshi", gender: "Male" },
+  { name: "Kavita Reddy", gender: "Female" },
+  { name: "Suresh Menon", gender: "Male" },
+  { name: "Pooja Banerjee", gender: "Female" },
+  { name: "Manoj Tiwari", gender: "Male" },
+  { name: "Neha Mukherjee", gender: "Female" },
+  { name: "Arjun Kapoor", gender: "Male" },
+  { name: "Ritu Saxena", gender: "Female" },
+  { name: "Harish Chawla", gender: "Male" },
+  { name: "Shweta Kulkarni", gender: "Female" },
+  { name: "Aditya Bhattacharya", gender: "Male" },
+  { name: "Divya Pillai", gender: "Female" },
+  { name: "Gautam Sen", gender: "Male" },
+  { name: "Kritika Agarwal", gender: "Female" },
+  { name: "Kunal Mehra", gender: "Male" },
+  { name: "Tanvi Choudhury", gender: "Female" },
+  { name: "Naveen Nambiar", gender: "Male" },
+  { name: "Swati Bhosle", gender: "Female" },
+  { name: "Vivek Sundaram", gender: "Male" },
+  { name: "Pallavi Ghosh", gender: "Female" },
+  { name: "Alok Pandey", gender: "Male" },
+  { name: "Madhuri Hegde", gender: "Female" },
+  { name: "Tarun Bajaj", gender: "Male" },
+  { name: "Anuradha Shukla", gender: "Female" },
+  { name: "Pranav Dixit", gender: "Male" },
+  { name: "Sneha Kaushik", gender: "Female" },
+  { name: "Ashok Singhal", gender: "Male" },
+  { name: "Preeti Mishra", gender: "Female" },
+  { name: "Dinesh Prabhu", gender: "Male" },
+  { name: "Radha Venkatesh", gender: "Female" },
+  { name: "Karthik Rajan", gender: "Male" },
+  { name: "Bhavna Jain", gender: "Female" },
+  { name: "Mohit Grover", gender: "Male" },
+  { name: "Smita Sethi", gender: "Female" },
+  { name: "Nitin Bhasin", gender: "Male" },
+  { name: "Anjali Mathur", gender: "Female" },
+  { name: "Prakash Dutta", gender: "Male" },
+  { name: "Vidya Gokhale", gender: "Female" },
+  { name: "Manish Somani", gender: "Male" },
+  { name: "Rupal Vora", gender: "Female" },
+  { name: "Siddharth Oberoi", gender: "Male" },
+  { name: "Aparna Bhatt", gender: "Female" },
+  { name: "Hemant Ahuja", gender: "Male" },
+  { name: "Komal Rastogi", gender: "Female" },
+  { name: "Sandeep Goel", gender: "Male" },
+  { name: "Geeta Ranganathan", gender: "Female" },
+  { name: "Rameshwar Dayal", gender: "Male" },
+  { name: "Rashmi Tripathi", gender: "Female" },
+  { name: "Ajay Natarajan", gender: "Male" },
+  { name: "Isha Marwah", gender: "Female" },
+  { name: "Varun Shenoy", gender: "Male" },
+  { name: "Leela Kurian", gender: "Female" },
+  { name: "Chetan Sodhi", gender: "Male" },
+  { name: "Urmila Deol", gender: "Female" },
+  { name: "Jitendra Solanki", gender: "Male" },
+  { name: "Namrata Dalal", gender: "Female" },
+  { name: "Anand Vasudevan", gender: "Male" },
+  { name: "Shalini Dewan", gender: "Female" },
+  { name: "Bhupendra Bisht", gender: "Male" },
+  { name: "Sumanth Chadha", gender: "Male" },
+  { name: "Deepak Srivastav", gender: "Male" },
+  { name: "Kiran Mazumdar", gender: "Female" },
+  { name: "Vikas Talwar", gender: "Male" },
+  { name: "Jyoti Raghavan", gender: "Female" },
+];
+
+const HISTORICAL_INDIAN_NAMES: Array<{ name: string; gender: "Male" | "Female" }> = [
+  { name: "Ratan Tata-Verma", gender: "Male" },
+  { name: "Lata Mangeshkar-Patil", gender: "Female" },
+  { name: "Vikram Sarabhai-Menon", gender: "Male" },
+  { name: "Kalpana Chawla-Iyer", gender: "Female" },
+  { name: "Homi Bhabha-Deshmukh", gender: "Male" },
+  { name: "Sarojini Naidu-Reddy", gender: "Female" },
+  { name: "Jagadish Bose-Banerjee", gender: "Male" },
+  { name: "Aruna Asaf-Ali", gender: "Female" },
+  { name: "Subhash Chandra-Sen", gender: "Male" },
+  { name: "Kamala Das-Nair", gender: "Female" },
+  { name: "Rabindra Tagore-Ghosh", gender: "Male" },
+  { name: "Amrita Sher-Gil", gender: "Female" },
+  { name: "Srinivasa Ramanujan", gender: "Male" },
+  { name: "Tessy Thomas-Kurian", gender: "Female" },
+  { name: "Verghese Kurien", gender: "Male" },
+  { name: "Anandi Gopal Joshi", gender: "Female" },
+  { name: "C. V. Raman", gender: "Male" },
+  { name: "Janaki Ammal", gender: "Female" },
+  { name: "Meghnad Saha", gender: "Male" },
+  { name: "Asima Chatterjee", gender: "Female" },
+  // Deceased outcomes
+  { name: "Govindram Aggarwal", gender: "Male" },
+  { name: "Shakuntala Devi-Gupta", gender: "Female" },
+];
+
+const DIAGNOSES = [
+  "Viral Bronchopneumonitis - Moderate",
+  "Acute Viral Syndrome with Pyrexia",
+  "Post-Viral Convalescent Phase",
+  "Viral Upper Respiratory Tract Infection",
+  "Viral Malaise - Isolation & Monitoring",
+  "Suspected Viral Bronchitis",
+  "Quarantine Observation - Exposure Contact",
+  "Viral Pharyngitis with Low-grade Pyrexia",
+];
 
 export function getInitialDemoData(baseDate: string = "2026-10-23") {
   const today = baseDate;
@@ -9,477 +124,157 @@ export function getInitialDemoData(baseDate: string = "2026-10-23") {
   const dMinus4 = getPreviousDate(today, 4);
   const dMinus5 = getPreviousDate(today, 5);
 
-  const initialPatients: Patient[] = [
-    {
-      id: "P-101",
-      name: "Elena Rostova",
-      age: 34,
-      gender: "Female",
-      bedNumber: "B-01",
-      admissionDate: dMinus4,
-      status: "active",
+  const initialPatients: Patient[] = [];
+  const initialTempRecords: TemperatureRecord[] = [];
+  const initialDoctorVisits: DoctorVisit[] = [];
+
+  // 1. Create exactly 74 active patients occupying beds B-01 to B-74 (FULL CAPACITY)
+  for (let i = 0; i < 74; i++) {
+    const bedNum = `B-${String(i + 1).padStart(2, "0")}`;
+    const pId = `P-${String(i + 101).padStart(3, "0")}`;
+    const person = INDIAN_NAMES[i % INDIAN_NAMES.length];
+    const age = 20 + ((i * 7) % 60);
+    const diagnosis = DIAGNOSES[i % DIAGNOSES.length];
+
+    // Admission dates spread across last 3-5 days
+    const admissionOffset = 2 + (i % 4);
+    const admissionDate = getPreviousDate(today, admissionOffset);
+
+    // Grouping by clinical workflow status:
+    // Beds B-01 to B-18 (18 patients): Pending Temperature Check today (Nurse Dashboard pending)
+    // Beds B-19 to B-45 (27 patients): Temperature recorded today, Doctor Visit Pending (Doctor Dashboard ready)
+    // Beds B-46 to B-55 (10 patients): 3 full consecutive fever-free days recorded -> DISCHARGE ELIGIBLE (Admin Dashboard eligible)
+    // Beds B-56 to B-74 (19 patients): Temperature recorded today, Doctor Visit Completed today
+    const isDischargeEligible = i >= 45 && i <= 54; // B-46 to B-55 (10 patients)
+    const status = isDischargeEligible ? "discharge_eligible" : "active";
+
+    initialPatients.push({
+      id: pId,
+      name: person.name,
+      age,
+      gender: person.gender,
+      bedNumber: bedNum,
+      admissionDate,
+      status,
       outcome: null,
-      diagnosis: "Acute Viral Syndrome - Mild",
-    },
-    {
-      id: "P-102",
-      name: "Liam Gallagher",
-      age: 42,
-      gender: "Male",
-      bedNumber: "B-02",
-      admissionDate: dMinus3,
-      status: "active",
-      outcome: null,
-      diagnosis: "Viral Pneumonitis - Moderate",
-    },
-    {
-      id: "P-103",
-      name: "Amara Okafor",
-      age: 29,
-      gender: "Female",
-      bedNumber: "B-03",
-      admissionDate: dMinus5,
-      status: "discharge_eligible",
-      outcome: null,
-      diagnosis: "Post-Viral Convalescence",
-    },
-    {
-      id: "P-104",
-      name: "Chen Wei",
-      age: 51,
-      gender: "Male",
-      bedNumber: "B-04",
-      admissionDate: dMinus4,
-      status: "active",
-      outcome: null,
-      diagnosis: "Viral Bronchitis with Pyrexia",
-    },
-    {
-      id: "P-105",
-      name: "Sofia Martinez",
-      age: 38,
-      gender: "Female",
-      bedNumber: "B-05",
-      admissionDate: dMinus4,
-      status: "active",
-      outcome: null,
-      diagnosis: "Viral Upper Respiratory Infection",
-    },
-    {
-      id: "P-106",
-      name: "Marcus Sterling",
-      age: 63,
-      gender: "Male",
-      bedNumber: "B-06",
-      admissionDate: dMinus3,
-      status: "active",
-      outcome: null,
-      diagnosis: "Viral Malaise - Monitoring",
-    },
-    {
-      id: "P-107",
-      name: "Fatima Al-Mansoor",
-      age: 26,
-      gender: "Female",
-      bedNumber: "B-07",
-      admissionDate: today,
-      status: "active",
-      outcome: null,
-      diagnosis: "New Intake - Exposure Quarantine",
-    },
-    {
-      id: "P-108",
-      name: "Daniel Kim",
-      age: 47,
-      gender: "Male",
-      bedNumber: "B-08",
-      admissionDate: dMinus5,
-      status: "discharge_eligible",
-      outcome: null,
-      diagnosis: "Resolved Viral Infection",
-    },
-    // Completed Outcomes (Historical Discharged & Deceased)
-    {
-      id: "P-090",
-      name: "Hannah Schmidt",
-      age: 31,
-      gender: "Female",
-      bedNumber: "B-09",
+      diagnosis,
+    });
+
+    // Generate historical temperature records:
+    // dMinus2 reading
+    const tempD2 = isDischargeEligible ? 36.4 + ((i % 5) * 0.1) : 36.5 + ((i % 10) * 0.1);
+    initialTempRecords.push({
+      id: `TR-${pId}-d2`,
+      patientId: pId,
+      date: dMinus2,
+      time: "08:15",
+      temperature: Number(tempD2.toFixed(1)),
+      nurseId: DEFAULT_NURSES[i % DEFAULT_NURSES.length],
+      timestamp: Date.now() - 172800000 + i * 1000,
+    });
+
+    // dMinus1 reading (fever demonstration on B-15 and B-30)
+    const isFeverYesterday = i === 14 || i === 29;
+    const tempD1 = isFeverYesterday
+      ? 38.4
+      : isDischargeEligible
+      ? 36.5 + ((i % 4) * 0.1)
+      : 36.6 + ((i % 8) * 0.1);
+
+    initialTempRecords.push({
+      id: `TR-${pId}-d1`,
+      patientId: pId,
+      date: dMinus1,
+      time: "08:30",
+      temperature: Number(tempD1.toFixed(1)),
+      nurseId: DEFAULT_NURSES[(i + 1) % DEFAULT_NURSES.length],
+      timestamp: Date.now() - 86400000 + i * 1000,
+    });
+
+    // Yesterday's doctor visit completed for all patients admitted prior to today
+    initialDoctorVisits.push({
+      id: `DV-${pId}-d1`,
+      patientId: pId,
+      date: dMinus1,
+      completed: true,
+      completedAt: "11:30",
+      doctorName: DEFAULT_DOCTORS[i % DEFAULT_DOCTORS.length],
+      treatmentNotes: isFeverYesterday
+        ? "Febrile spike observed (38.4°C). Prescribed paracetamol and oral rehydration."
+        : "Vitals stable, chest clear on auscultation. Continuing routine monitoring.",
+    });
+
+    // Today's temperature and doctor visits:
+    const hasTempToday = i >= 18; // Beds B-19 to B-74 have temperature checked today
+    if (hasTempToday) {
+      const todayTemp = 36.4 + ((i % 6) * 0.1);
+      initialTempRecords.push({
+        id: `TR-${pId}-today`,
+        patientId: pId,
+        date: today,
+        time: "08:10",
+        temperature: Number(todayTemp.toFixed(1)),
+        nurseId: DEFAULT_NURSES[i % DEFAULT_NURSES.length],
+        timestamp: Date.now() - 18000000 + i * 1000,
+      });
+
+      // Today's doctor visit:
+      // Beds B-46 to B-74 have completed visit today
+      const hasVisitToday = i >= 45;
+      if (hasVisitToday) {
+        initialDoctorVisits.push({
+          id: `DV-${pId}-today`,
+          patientId: pId,
+          date: today,
+          completed: true,
+          completedAt: "10:15",
+          doctorName: DEFAULT_DOCTORS[i % DEFAULT_DOCTORS.length],
+          treatmentNotes: isDischargeEligible
+            ? "Completed 72+ hours afebrile. Vitals excellent, lungs clear. Recommended for administrative discharge."
+            : "Patient alert, afebrile today. Stable clinical progression.",
+        });
+      }
+    }
+  }
+
+  // 2. Historical Completed Outcomes (Recovered & Deceased) for benchmark calculations
+  // 20 Recovered patients
+  for (let j = 0; j < 20; j++) {
+    const person = HISTORICAL_INDIAN_NAMES[j];
+    const pId = `P-${String(j + 1).padStart(3, "0")}`;
+    initialPatients.push({
+      id: pId,
+      name: person.name,
+      age: 24 + ((j * 5) % 50),
+      gender: person.gender,
+      bedNumber: `B-${String((j % 74) + 1).padStart(2, "0")}`,
       admissionDate: dMinus5,
       dischargeDate: dMinus1,
       status: "discharged",
       outcome: "recovered",
-      diagnosis: "Viral Convalescence",
-    },
-    {
-      id: "P-091",
-      name: "Arthur Pendelton",
-      age: 72,
-      gender: "Male",
-      bedNumber: "B-10",
+      diagnosis: "Resolved Viral Infection",
+      notes: "Successfully quarantined and recovered after 3 consecutive fever-free days.",
+    });
+  }
+
+  // 2 Deceased patients
+  for (let k = 20; k < 22; k++) {
+    const person = HISTORICAL_INDIAN_NAMES[k];
+    const pId = `P-${String(k + 1).padStart(3, "0")}`;
+    initialPatients.push({
+      id: pId,
+      name: person.name,
+      age: 68 + (k % 10),
+      gender: person.gender,
+      bedNumber: `B-${String((k % 74) + 1).padStart(2, "0")}`,
       admissionDate: dMinus5,
       dischargeDate: dMinus2,
       status: "deceased",
       outcome: "deceased",
       diagnosis: "Severe Acute Respiratory Distress",
-    },
-    {
-      id: "P-092",
-      name: "Grace Hopper",
-      age: 45,
-      gender: "Female",
-      bedNumber: "B-11",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus2,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Mild Viral Syndrome",
-    },
-    {
-      id: "P-093",
-      name: "Noah Jackson",
-      age: 23,
-      gender: "Male",
-      bedNumber: "B-12",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus3,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Viral Exposure Convalescence",
-    },
-    {
-      id: "P-094",
-      name: "Chloe Bennett",
-      age: 39,
-      gender: "Female",
-      bedNumber: "B-13",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus1,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Illness",
-    },
-    {
-      id: "P-095",
-      name: "Tariq Morales",
-      age: 50,
-      gender: "Male",
-      bedNumber: "B-14",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus2,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Infection",
-    },
-    {
-      id: "P-096",
-      name: "Zoe Patel",
-      age: 35,
-      gender: "Female",
-      bedNumber: "B-15",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus1,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Illness",
-    },
-    {
-      id: "P-097",
-      name: "Klaus Wagner",
-      age: 41,
-      gender: "Male",
-      bedNumber: "B-16",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus3,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Illness",
-    },
-    {
-      id: "P-098",
-      name: "Beatrice Webb",
-      age: 28,
-      gender: "Female",
-      bedNumber: "B-17",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus2,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Infection",
-    },
-    {
-      id: "P-099",
-      name: "Ethan Wright",
-      age: 55,
-      gender: "Male",
-      bedNumber: "B-18",
-      admissionDate: dMinus5,
-      dischargeDate: dMinus1,
-      status: "discharged",
-      outcome: "recovered",
-      diagnosis: "Resolved Viral Illness",
-    },
-  ];
-
-  // Temperature Records
-  const initialTempRecords: TemperatureRecord[] = [
-    // P-101: Pending today (no reading for today). Previous days fever-free.
-    {
-      id: "TR-101-1",
-      patientId: "P-101",
-      date: dMinus2,
-      time: "08:15",
-      temperature: 36.6,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 172800000,
-    },
-    {
-      id: "TR-101-2",
-      patientId: "P-101",
-      date: dMinus1,
-      time: "08:30",
-      temperature: 36.8,
-      nurseId: "Nurse David Chen, BSN",
-      timestamp: Date.now() - 86400000,
-    },
-
-    // P-102: Temperature recorded today! Ready for Doctor visit.
-    {
-      id: "TR-102-1",
-      patientId: "P-102",
-      date: dMinus2,
-      time: "08:45",
-      temperature: 37.0,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 172800000,
-    },
-    {
-      id: "TR-102-2",
-      patientId: "P-102",
-      date: dMinus1,
-      time: "09:00",
-      temperature: 36.9,
-      nurseId: "Nurse Maria Rodriguez, RN",
-      timestamp: Date.now() - 86400000,
-    },
-    {
-      id: "TR-102-3",
-      patientId: "P-102",
-      date: today,
-      time: "08:10",
-      temperature: 36.7,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 18000000,
-    },
-
-    // P-103: 3 full consecutive fever-free days recorded! Eligible for discharge.
-    {
-      id: "TR-103-1",
-      patientId: "P-103",
-      date: dMinus3,
-      time: "08:00",
-      temperature: 37.8, // Fever on dMinus3
-      nurseId: "Nurse David Chen, BSN",
-      timestamp: Date.now() - 259200000,
-    },
-    {
-      id: "TR-103-2",
-      patientId: "P-103",
-      date: dMinus2,
-      time: "08:30",
-      temperature: 36.6, // Fever-free day 1
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 172800000,
-    },
-    {
-      id: "TR-103-3",
-      patientId: "P-103",
-      date: dMinus1,
-      time: "08:30",
-      temperature: 36.5, // Fever-free day 2
-      nurseId: "Nurse Maria Rodriguez, RN",
-      timestamp: Date.now() - 86400000,
-    },
-    {
-      id: "TR-103-4",
-      patientId: "P-103",
-      date: today,
-      time: "08:00",
-      temperature: 36.4, // Fever-free day 3!
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 18000000,
-    },
-
-    // P-104: Had fever yesterday (38.4°C). Today temp recorded (37.2°C). Streak = 1.
-    {
-      id: "TR-104-1",
-      patientId: "P-104",
-      date: dMinus2,
-      time: "09:15",
-      temperature: 37.1,
-      nurseId: "Nurse David Chen, BSN",
-      timestamp: Date.now() - 172800000,
-    },
-    {
-      id: "TR-104-2",
-      patientId: "P-104",
-      date: dMinus1,
-      time: "09:30",
-      temperature: 38.4, // Fever!
-      nurseId: "Nurse Alex Thompson, LPN",
-      timestamp: Date.now() - 86400000,
-    },
-    {
-      id: "TR-104-3",
-      patientId: "P-104",
-      date: today,
-      time: "08:45",
-      temperature: 37.2,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 15000000,
-    },
-
-    // P-105: Missing check yesterday. Streak broken by missing reading.
-    {
-      id: "TR-105-1",
-      patientId: "P-105",
-      date: dMinus2,
-      time: "10:00",
-      temperature: 36.7,
-      nurseId: "Nurse Maria Rodriguez, RN",
-      timestamp: Date.now() - 172800000,
-    },
-    // No reading for dMinus1 (gap)
-    {
-      id: "TR-105-2",
-      patientId: "P-105",
-      date: today,
-      time: "09:00",
-      temperature: 36.6,
-      nurseId: "Nurse David Chen, BSN",
-      timestamp: Date.now() - 12000000,
-    },
-
-    // P-106: 2 consecutive fever-free days (yesterday, today). Needs 1 more day.
-    {
-      id: "TR-106-1",
-      patientId: "P-106",
-      date: dMinus1,
-      time: "08:15",
-      temperature: 36.7,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 86400000,
-    },
-    {
-      id: "TR-106-2",
-      patientId: "P-106",
-      date: today,
-      time: "08:20",
-      temperature: 36.8,
-      nurseId: "Nurse Alex Thompson, LPN",
-      timestamp: Date.now() - 18000000,
-    },
-
-    // P-107: New admission today, no temperature check yet.
-
-    // P-108: 3 consecutive fever-free days recorded (dMinus2, dMinus1, today). Eligible!
-    {
-      id: "TR-108-1",
-      patientId: "P-108",
-      date: dMinus2,
-      time: "07:45",
-      temperature: 36.5,
-      nurseId: "Nurse David Chen, BSN",
-      timestamp: Date.now() - 172800000,
-    },
-    {
-      id: "TR-108-2",
-      patientId: "P-108",
-      date: dMinus1,
-      time: "08:00",
-      temperature: 36.6,
-      nurseId: "Nurse Maria Rodriguez, RN",
-      timestamp: Date.now() - 86400000,
-    },
-    {
-      id: "TR-108-3",
-      patientId: "P-108",
-      date: today,
-      time: "08:05",
-      temperature: 36.4,
-      nurseId: "Nurse Sarah Jenkins, RN",
-      timestamp: Date.now() - 18000000,
-    },
-  ];
-
-  // Doctor Visits
-  const initialDoctorVisits: DoctorVisit[] = [
-    // P-101: Yesterday visit was complete. Today visit pending (and temp is pending too).
-    {
-      id: "DV-101-1",
-      patientId: "P-101",
-      date: dMinus1,
-      completed: true,
-      completedAt: "11:30",
-      doctorName: "Dr. Evelyn Vance, MD (Infectious Disease)",
-      treatmentNotes: "Patient resting comfortably. Vitals stable.",
-    },
-
-    // P-102: Today's visit is PENDING (temperature recorded this morning). Ready for doctor!
-    {
-      id: "DV-102-1",
-      patientId: "P-102",
-      date: dMinus1,
-      completed: true,
-      completedAt: "12:15",
-      doctorName: "Dr. Marcus Brody, MD (Pulmonology)",
-      treatmentNotes: "Bilateral lung sounds improved. Continuing supportive care.",
-    },
-
-    // P-103: Today's visit is COMPLETED.
-    {
-      id: "DV-103-1",
-      patientId: "P-103",
-      date: today,
-      completed: true,
-      completedAt: "10:00",
-      doctorName: "Dr. Evelyn Vance, MD (Infectious Disease)",
-      treatmentNotes: "Patient asymptomatic for 72+ hours. Ready for administrative discharge.",
-    },
-
-    // P-104: Today's visit is PENDING (temp recorded this morning).
-    {
-      id: "DV-104-1",
-      patientId: "P-104",
-      date: dMinus1,
-      completed: true,
-      completedAt: "14:00",
-      doctorName: "Dr. Anita Sharma, MD (Internal Medicine)",
-      treatmentNotes: "Fever spike noted (38.4°C). Administered antipyretics and fluids.",
-    },
-
-    // P-106: Today's visit is PENDING.
-    {
-      id: "DV-106-1",
-      patientId: "P-106",
-      date: dMinus1,
-      completed: true,
-      completedAt: "11:00",
-      doctorName: "Dr. Evelyn Vance, MD (Infectious Disease)",
-      treatmentNotes: "Stable condition.",
-    },
-
-    // P-108: Today's visit COMPLETED.
-    {
-      id: "DV-108-1",
-      patientId: "P-108",
-      date: today,
-      completed: true,
-      completedAt: "09:30",
-      doctorName: "Dr. Anita Sharma, MD (Internal Medicine)",
-      treatmentNotes: "No fever, clear lungs. Concurs with discharge readiness.",
-    },
-  ];
+      notes: "Viral pneumonia complicated by pre-existing cardiovascular comorbidities.",
+    });
+  }
 
   return { initialPatients, initialTempRecords, initialDoctorVisits };
 }

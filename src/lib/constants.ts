@@ -25,14 +25,14 @@ export const FACILITY_CONFIG = {
 } as const;
 
 export const DEFAULT_NURSES = [
-  "Nurse Sarah Jenkins, RN",
-  "Nurse David Chen, BSN",
-  "Nurse Maria Rodriguez, RN",
-  "Nurse Alex Thompson, LPN",
+  "Nurse Anjali Sharma, RN",
+  "Nurse Deepak Patel, BSN",
+  "Nurse Lakshmi Nair, RN",
+  "Nurse Rahul Verma, GNM",
 ];
 
 export const DEFAULT_DOCTORS = [
-  "Dr. Evelyn Vance, MD (Infectious Disease)",
-  "Dr. Marcus Brody, MD (Pulmonology)",
-  "Dr. Anita Sharma, MD (Internal Medicine)",
+  "Dr. Rajiv Menon, MD (Infectious Disease)",
+  "Dr. Sunita Kulkarni, MD (Pulmonology)",
+  "Dr. Aditi Bhargava, MD (Critical Care)",
 ];

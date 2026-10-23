@@ -4,6 +4,15 @@ A frontend-only React / Next.js application built for the **Carepilot Technical 
 
 ---
 
+## 📸 Screen Designs & Wireframes (Assessment Q2 Requirement)
+
+Visual screen designs and component wireframes are provided in [SCREEN_DESIGNS.md](SCREEN_DESIGNS.md):
+- **Nurse Station**: [Nurse Dashboard Wireframe & Design](SCREEN_DESIGNS.md#1--nurse-dashboard--daily-temperature--vitals-station)
+- **Physician Rounds**: [Doctor Dashboard Wireframe & Design](SCREEN_DESIGNS.md#2-️-doctor-dashboard--clinical-rounds--assessment)
+- **Facility Admin**: [Admin Dashboard Wireframe & Design](SCREEN_DESIGNS.md#3-️-admin-dashboard--occupancy-discharges--benchmarks)
+
+---
+
 ## 🏥 Key Features by Role
 
 ### 1. Nurse Dashboard

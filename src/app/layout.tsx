@@ -23,6 +23,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <title>Carepilot — Virus Quarantine & Treatment Facility</title>
+        <meta
+          name="description"
+          content="Virus Quarantine & Treatment Management Application (Carepilot Assessment)"
+        />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

@@ -53,18 +53,20 @@ interface QuarantineContextType {
 
 const QuarantineContext = createContext<QuarantineContextType | null>(null);
 
-const STORAGE_KEY = "quarantine_facility_state_v2";
+const STORAGE_KEY = "carepilot_facility_state_v4";
+const defaultInitial = getInitialDemoData("2026-10-23");
 
 export function QuarantineProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<UserRole>("nurse");
   const [systemDate, setSystemDate] = useState<string>("2026-10-23");
   const [isInitialized, setIsInitialized] = useState(false);
 
-  const [patients, setPatients] = useState<Patient[]>([]);
-  const [temperatureRecords, setTemperatureRecords] = useState<TemperatureRecord[]>([]);
-  const [doctorVisits, setDoctorVisits] = useState<DoctorVisit[]>([]);
+  // Directly initialize with 74 patients so the first render is NEVER empty (Occupancy: 74/74)
+  const [patients, setPatients] = useState<Patient[]>(defaultInitial.initialPatients);
+  const [temperatureRecords, setTemperatureRecords] = useState<TemperatureRecord[]>(defaultInitial.initialTempRecords);
+  const [doctorVisits, setDoctorVisits] = useState<DoctorVisit[]>(defaultInitial.initialDoctorVisits);
 
-  // Load from localStorage or initialize with demo data on mount
+  // Load from localStorage or initialize with full 74-patient demo data on mount
   useEffect(() => {
     const today = getLocalDateString();
     setSystemDate(today);
@@ -73,7 +75,12 @@ export function QuarantineProvider({ children }: { children: React.ReactNode }) 
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.patients && parsed.temperatureRecords && parsed.doctorVisits) {
+        if (
+          Array.isArray(parsed.patients) &&
+          parsed.patients.length >= 70 &&
+          Array.isArray(parsed.temperatureRecords) &&
+          Array.isArray(parsed.doctorVisits)
+        ) {
           setPatients(parsed.patients);
           setTemperatureRecords(parsed.temperatureRecords);
           setDoctorVisits(parsed.doctorVisits);
@@ -86,7 +93,7 @@ export function QuarantineProvider({ children }: { children: React.ReactNode }) 
       // Fallback if parsing fails
     }
 
-    // Initialize with demo data
+    // Initialize with fresh full-capacity 74-patient dataset
     const initial = getInitialDemoData(today);
     setPatients(initial.initialPatients);
     setTemperatureRecords(initial.initialTempRecords);
