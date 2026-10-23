@@ -54,7 +54,7 @@ export function HospitalHeader() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50 flex items-center gap-1.5">
-                  <span className="text-indigo-600 dark:text-indigo-400 font-extrabold tracking-tight">CarePilot</span>
+                  <span className="text-indigo-600 dark:text-indigo-400 font-extrabold tracking-tight">Carepilot</span>
                   <span className="text-zinc-300 dark:text-zinc-700 font-light">|</span>
                   <span className="hidden sm:inline">Virus Quarantine & Treatment Facility</span>
                   <span className="sm:hidden">Quarantine Facility</span>

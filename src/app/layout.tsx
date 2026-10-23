@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "CarePilot — Virus Quarantine & Treatment Facility",
-  description: "Virus Quarantine & Treatment Management Application (CarePilot Assessment)",
+  title: "Carepilot — Virus Quarantine & Treatment Facility",
+  description: "Virus Quarantine & Treatment Management Application (Carepilot Assessment)",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

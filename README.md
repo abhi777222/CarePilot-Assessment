@@ -1,6 +1,6 @@
-# CarePilot — Virus Quarantine & Treatment Facility Management
+# Carepilot — Virus Quarantine & Treatment Facility Management
 
-A frontend-only React / Next.js application built for the **CarePilot Technical Assessment**. It manages the daily clinical monitoring, physician rounds, discharge eligibility, and operational capacity of an infectious disease quarantine unit.
+A frontend-only React / Next.js application built for the **Carepilot Technical Assessment**. It manages the daily clinical monitoring, physician rounds, discharge eligibility, and operational capacity of an infectious disease quarantine unit.
 
 ---
 
